@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - PORT=${PORT}
+      - EXCHANGE_RATE_API_KEY=${EXCHANGE_RATE_API_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_SENDER_EMAIL=${RESEND_SENDER_EMAIL}
+      - TYPEORM_HOST=${TYPEORM_HOST}
+      - TYPEORM_PORT=${TYPEORM_PORT}
+      - TYPEORM_USERNAME=${TYPEORM_USERNAME}
+      - TYPEORM_PASSWORD=${TYPEORM_PASSWORD}
+      - TYPEORM_DATABASE=${TYPEORM_DATABASE}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      TYPEORM_DATABASE: ${TYPEORM_DATABASE}
+      TYPEORM_USERNAME: ${TYPEORM_USERNAME}
+      TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
+    ports:
+      - "${TYPEORM_PORT}:${TYPEORM_PORT}"
+    volumes:
+      - db-data:/var/lib/mysql
